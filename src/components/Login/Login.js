@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import {Button, Form} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css"
 async function loginUser(credentials) {
-    return fetch("http://localhost:8080/api/auth", {
+    return fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

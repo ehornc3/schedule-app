@@ -1,6 +1,11 @@
 # schedule-app
-Schedule Management Application
 
 Application is mostly boilerplate as I connect each system together, but feel free to look around!
 
-All database connectivity and API calls currently refer to localhost.
+TODO:
+- Check token on each API call
+  -Test that this works
+- Further implement all endpoints
+- Sign-up page
+- Log-out button
+- Like, the rest of the front end
