@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import "./Login.css"
 import PropTypes from "prop-types";
-import {Button, Form} from "react-bootstrap";
+import {Button, Form, Alert} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css"
 async function loginUser(credentials) {
     return fetch("http://localhost:8080/api/auth/login", {
@@ -13,38 +13,74 @@ async function loginUser(credentials) {
     })
         .then(data => data.json())
 }
+
+async function signupUser(details) {
+    return fetch("http://localhost:8080/api/auth/signup", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(details)
+    })
+        .then(data => data.json())
+}
+
 export default function Login({setToken}) {
-    const [email, setEmail] = useState()
-    const [password, setPassword] = useState()
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [name, setName] = useState("")
+    const [isTargetSignup, setTargetSignup] = useState(false)
+    //const [warning, setWarning] = useState()
 
     const handleSubmit = async e => {
         e.preventDefault()
-        const token = await loginUser({
-            email,
-            password
-        })
-        setToken(token)
+        let res
+        if (isTargetSignup) {
+            res = await signupUser({
+                email,
+                password,
+                name
+            })
+        } else {
+            res = await loginUser({
+                email,
+                password
+            })
+        }
+        if (res.status === "success") setToken(res.token)
+        else {
+            return <Alert variant={"danger"}>{res.description}</Alert>
+        }
     }
-
-    return(
+    console.log("hello")
+    return ( // Log in
         <div className="login-wrapper">
-            <h1>Log In</h1>
+            <h1>{isTargetSignup ? "Sign up" : "Log In"}</h1>
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formEmail">
                     <Form.Label>Email</Form.Label>
                     <Form.Control type="email" onChange={e => setEmail(e.target.value)} placeholder="Enter email" />
                 </Form.Group>
 
+                {isTargetSignup && <>
+                    <Form.Group className="mb-3" controlId="formName">
+                        <Form.Label>Name</Form.Label>
+                        <Form.Control type="name" onChange={e => setName(e.target.value)} placeholder="First Name" />
+                    </Form.Group>
+                </>}
+
                 <Form.Group className="mb-3" controlId="formPassword">
                     <Form.Label>Password</Form.Label>
                     <Form.Control type="password" onChange={e => setPassword(e.target.value)} placeholder="Password" />
                 </Form.Group>
-                <Button variant="primary" type="submit">Submit</Button>
+                <Button variant="primary" type="submit">{isTargetSignup ? "Sign Up" : "Log In"}</Button>
             </Form>
+            <br />
+            <h6 onClick={e => setTargetSignup(!isTargetSignup)}><u>No account? Signup here</u></h6>
         </div>
     )
 }
 
 Login.propTypes = {
-    setToken: PropTypes.func.isRequired
+    setToken: PropTypes.func.isRequired,
 }

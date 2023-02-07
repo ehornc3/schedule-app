@@ -26,13 +26,17 @@ router.use("/auth/signup", async (req, res) => {
 })
 router.use("/auth/login", async (req, res) => {
     try {
-        await connection.query("SELECT password WHERE email = ?", req.body.email, async (err, rows, fields) => {
+        await connection.query("SELECT password FROM user WHERE email = ?", req.body.email, async (err, rows, fields) => {
             if (err) throw err
-            await bcrypt.compare(req.body.password, rows[0].password, async (err, result) => {
+            if (rows.length == 0) {
+                res.send({status: "failure", description: "Email not found"})
+            } else await bcrypt.compare(req.body.password, rows[0].password, async (err, result) => {
                 if (err) throw err
                 if (result) {
-                    res.send({status: "success", token: token.get(req.body.email)})
-                } else res.send({status: "failure"})
+                    await token.get(req.body.email, (result) => {
+                        res.send({status: "success", token: result})
+                    })
+                } else res.send({status: "failure", description: "Password does not match"})
             })
         })
     } catch(e) {
