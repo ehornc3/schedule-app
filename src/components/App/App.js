@@ -18,8 +18,6 @@ function App() {
     console.log('token found' + token)
     return (
         <div className="wrapper">
-            <Navbar ></Navbar>
-            <h1>Application</h1>
             <BrowserRouter>
                 <Routes>
                     <Route path="/dashboard" element={<Dashboard />} />

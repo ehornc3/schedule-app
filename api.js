@@ -45,22 +45,35 @@ router.post("/auth/login", async (req, res) => {
         createError(500)
     }
 })
-// POST /users will be used for modifying account permissions.
+/** POST /users will be used for modifying account permissions.
+ * Requires: {token, email, newPermission}
+ */
 router.post("/users", async (req, res) => {
-    createError(501)
+    if (!req.body.token || !req.body.email || !req.body.newPermission) res.status(401).send({status: "failure", description: "Incomplete request"})
+    await token.check(req.body.token, "admin", async (result) => {
+        if (!result) res.status(403).send({status: "failure", description: "Forbidden"})
+        else try {
+            await connection.query("UPDATE user SET permission = ? WHERE (email = ?)", [req.body.newPermission, req.body.email], async (err, rows, fields) => {
+                if (err) throw err
+                res.status(200).send()
+            })
+        } catch (e) {
+            console.log(e)
+            createError(500)
+        }
+    })
 })
 
-// GET /users will generate a list of all accounts, regardless of permissions.
+/** GET /users will generate a list of all accounts, regardless of permissions.
+ * Requires: {token}
+ */
 router.get("/users", async (req, res) => {
-    console.log('req came in')
     if (!req.body.token) res.status(401).send({status: "failure", description: "No token"})
     await token.check(req.body.token, "admin", async (result) => {
         if (!result) res.status(403).send({status: "failure", description: "Forbidden"})
         else try {
-            console.log("trying to return")
             await connection.query("SELECT email, name, permission FROM user", async (err, rows, fields) => {
                 if (err) throw err
-                console.log("query succeeded")
                 res.status(200).send({rows: rows, fields: fields})
             })
         } catch (e) {
@@ -69,9 +82,23 @@ router.get("/users", async (req, res) => {
         }
     })
 })
-// DELETE /users will delete a user account.
+/** DELETE /users will delete a user account.
+ * Requires: {token, email}
+ */
 router.delete("/users", async (req, res) => {
-    createError(501)
+    if (!req.body.token || !req.body.email) res.status(401).send({status: "failure", description: "Incomplete request"})
+    await token.check(req.body.token, "admin", async (result) => {
+        if (!result) res.status(403).send({status: "failure", description: "Forbidden"})
+        else try {
+            await connection.query("DELETE FROM user WHERE (email = ?)", req.body.email, async (err, rows, fields) => {
+                if (err) throw err
+                res.status(200).send()
+            })
+        } catch (e) {
+            console.log(e)
+            createError(500)
+        }
+    })
 })
 
 router.use(function(req, res, next) {

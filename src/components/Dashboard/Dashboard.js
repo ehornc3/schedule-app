@@ -1,7 +1,11 @@
 import React from 'react';
+import CNavbar from "../CNavbar/CNavbar";
 
 export default function Dashboard() {
     return(
-        <h2>Dashboard</h2>
+        <div>
+            <CNavbar title={"Dashboard"} />
+            <h2>Dashboard</h2>
+        </div>
     );
 }

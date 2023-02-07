@@ -1,7 +1,9 @@
 import React from 'react';
-
+import CNavbar from "../CNavbar/CNavbar";
 export default function Users() {
     return(
-        <h2>View users</h2>
+        <div>
+            <CNavbar title={"Account Control"}></CNavbar>
+        </div>
     );
 }
