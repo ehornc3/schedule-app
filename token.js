@@ -1,11 +1,31 @@
 const connection = require('./connection.js')
 
-module.exports.check = async (token) => {
-    await connection.query("SELECT token, email FROM user WHERE token = ?", token, (err, rows, fields) => {
+module.exports.check = async (token, requiredPermission, callback) => {
+    await connection.query("SELECT token, email, permission FROM user WHERE token = ?", token, (err, rows, fields) => {
         if (err) throw err
         if (rows.length > 0) {
-            return rows[0].email
-        } else return null
+            if (requiredPermission == "admin") {
+                switch(rows[0].permission) {
+                    case "admin":
+                        callback(rows[0].email)
+                        break;
+                    default:
+                        callback(null)
+                }
+            } else if (requiredPermission == "user") {
+                switch(rows[0].permission) {
+                    case "admin":
+                    case "user":
+                        callback(rows[0].email)
+                        break;
+                    default:
+                        callback(null)
+
+                }
+            } else if (requiredPermission == "none") {
+                callback(rows[0].email)
+            }
+        } else callback(null)
     })
 }
 

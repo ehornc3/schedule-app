@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import "./Login.css"
 import PropTypes from "prop-types";
-import {Button, Form, Alert} from "react-bootstrap";
+import {Button, Form, Alert, Nav} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css"
 async function loginUser(credentials) {
     return fetch("http://localhost:8080/api/auth/login", {
@@ -76,7 +76,10 @@ export default function Login({setToken}) {
                 <Button variant="primary" type="submit">{isTargetSignup ? "Sign Up" : "Log In"}</Button>
             </Form>
             <br />
-            <h6 onClick={e => setTargetSignup(!isTargetSignup)}><u>No account? Signup here</u></h6>
+            { isTargetSignup ?
+                <Nav.Link onClick={e => setTargetSignup(!isTargetSignup)}>Already have an account? <u>Log in here.</u></Nav.Link> :
+                <Nav.Link onClick={e => setTargetSignup(!isTargetSignup)}>No account? <u>Signup here.</u></Nav.Link>
+            }
         </div>
     )
 }
