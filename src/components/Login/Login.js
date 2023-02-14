@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import "./Login.css"
-import PropTypes from "prop-types";
 import {Button, Form, Alert, Nav} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css"
+
 async function loginUser(credentials) {
     return fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
@@ -25,7 +25,7 @@ async function signupUser(details) {
         .then(data => data.json())
 }
 
-export default function Login({setToken}) {
+export default function Login(props) {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [name, setName] = useState("")
@@ -47,12 +47,14 @@ export default function Login({setToken}) {
                 password
             })
         }
-        if (res.status === "success") setToken(res.token)
+        if (res.status === "success") {
+            await props.app.saveToken(res.token)
+            localStorage.setItem("name", res.name)
+        }
         else {
             return <Alert variant={"danger"}>{res.description}</Alert>
         }
     }
-    console.log("hello")
     return ( // Log in
         <div className="login-wrapper">
             <h1>{isTargetSignup ? "Sign up" : "Log In"}</h1>
@@ -82,8 +84,4 @@ export default function Login({setToken}) {
             }
         </div>
     )
-}
-
-Login.propTypes = {
-    setToken: PropTypes.func.isRequired,
 }

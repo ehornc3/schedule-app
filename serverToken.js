@@ -1,9 +1,10 @@
 const connection = require('./connection.js')
 
 module.exports.check = async (token, requiredPermission, callback) => {
-    await connection.query("SELECT token, email, permission FROM user WHERE token = ?", token, (err, rows, fields) => {
+    await connection.query("SELECT token, email, permission, tokenExpiration FROM user WHERE token = ?", token, (err, rows, fields) => {
         if (err) throw err
-        if (rows.length > 0) {
+        // Check the token is in the database. If not, return null. If so, check it is not expired. If not, check permissions...
+        if (rows.length > 0 && Date.parse(rows[0].tokenExpiration) > Date.parse(new Date(Date.now()).toISOString())) {
             if (requiredPermission == "admin") {
                 switch(rows[0].permission) {
                     case "admin":

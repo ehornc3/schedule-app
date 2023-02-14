@@ -1,9 +1,12 @@
 import React from 'react';
 import CNavbar from "../CNavbar/CNavbar";
-export default function Users() {
+
+const accountPermissions = ["none", "user", "admin"]
+
+export default function Users(props) {
     return(
         <div>
-            <CNavbar title={"Account Control"}></CNavbar>
+            <CNavbar app={props.app} title={"Account Control"}></CNavbar>
         </div>
     );
 }

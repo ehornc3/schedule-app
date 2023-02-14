@@ -1,10 +1,10 @@
 import React from 'react';
 import CNavbar from "../CNavbar/CNavbar";
 
-export default function Shifts() {
+export default function Shifts(props) {
     return(
         <div>
-            <CNavbar title={"Shifts"} />
+            <CNavbar app={props.app} title={"Shifts"} />
         </div>
     );
 }
