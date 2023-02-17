@@ -50,6 +50,7 @@ export default function Login(props) {
         if (res.status === "success") {
             await props.app.saveToken(res.token)
             localStorage.setItem("name", res.name)
+            props.app.setState({"name": res.name})
         }
         else {
             return <Alert variant={"danger"}>{res.description}</Alert>
@@ -79,8 +80,8 @@ export default function Login(props) {
             </Form>
             <br />
             { isTargetSignup ?
-                <Nav.Link onClick={e => setTargetSignup(!isTargetSignup)}>Already have an account? <u>Log in here.</u></Nav.Link> :
-                <Nav.Link onClick={e => setTargetSignup(!isTargetSignup)}>No account? <u>Signup here.</u></Nav.Link>
+                <Nav.Link onClick={() => setTargetSignup(!isTargetSignup)}>Already have an account? <u>Log in here.</u></Nav.Link> :
+                <Nav.Link onClick={() => setTargetSignup(!isTargetSignup)}>No account? <u>Signup here.</u></Nav.Link>
             }
         </div>
     )
