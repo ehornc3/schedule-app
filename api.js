@@ -102,14 +102,14 @@ router.post("/users", async (req, res) => {
  * Requires: {token}
  * Response: {rows, fields} ; fields: {email, name, permission} from user
  */
-router.get("/users", async (req, res) => {
-    if (!req.body.token) res.status(401).send({status: "failure", description: "No token"})
-    await token.check(req.body.token, "admin", async (result) => {
+router.get("/users/:token", async (req, res) => {
+    if (!req.params.token) res.status(401).send({status: "failure", description: "No token"})
+    await token.check(req.params.token, "admin", async (result) => {
         if (!result) res.status(403).send({status: "failure", description: "Forbidden"})
         else try {
             await connection.query("SELECT email, name, permission FROM user", async (err, rows, fields) => {
                 if (err) throw err
-                res.status(200).send({rows: rows, fields: fields})
+                res.status(200).send({rows})
             })
         } catch (e) {
             console.log(e)
